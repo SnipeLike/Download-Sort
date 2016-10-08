@@ -1,12 +1,12 @@
 #!/bin/sh
 #---------------#
 # Download-Sort	#
-# v0.1     	#
+# v0.2     	#
 #---------------#
 
 #Var
-dloadFolder=""
-showsFolder=""
+dloadFolder="/Downloads/jDownloader"
+showsFolder="/NAS/Shows"
 
 #Read Folder/File Name
 cd "$dloadFolder"
@@ -17,7 +17,7 @@ do
 	cd $showsFolder
 	for ddir in *;
 	do
-		tvShow = "$ddir"
+		tvShow="$ddir"
 		#Replace Spaces with "." in Destination Folders
 		tvShowRepl=$( echo "$tvShow" | tr '[ ]' '.')
 		
@@ -66,17 +66,18 @@ do
 						season="Staffel 12"
 						;;
 					*)
-						echo "No matching Season"
+						echo "No matching Season found for" $sourceName
 						;;
 				esac
 				
 				#Copy downloaded Episode into target folder$
 				source="$dloadFolder"/"$sourceName"
-				dest="$showsFolder"/"$tvShow"/"$season"
-				mv "$source" "$dest"
+				dest="$showsFolder"/"$tvShow"/"$season"/
+				logOut=$(mv -v "$source" "$dest")
 				
 				#Debug
-				#mv -v "$source" "$dest"
+				#touch download-sort.log
+				#mv -v "$source" "$dest">>download-sort.log
 				#echo "Series Moved"
 				;;
 			*)
