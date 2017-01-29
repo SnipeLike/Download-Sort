@@ -2,119 +2,144 @@
 
 #---------------#
 # Download-Sort #
-# v0.5          #
+# v0.7          #
 #---------------#
 
 #Env-Var
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 #Var
-dloadFolder="/Downloads/extracted"
-showsFolder="/NAS/Shows"
+dloadFolder1="/Downloads/extracted"
+showsFolder1="/NAS/Shows"
+showsFolder2="/NAS/Shows-English"
+newShowDir=""
 
-#Read Folder/File Name
-cd "$dloadFolder"
-
-for sdir in *;
+#For every folder in Directory
+for sdir in $dloadFolder1;
 do
 
-#Read Folder/File Name
-cd "$dloadFolder"
+	#Read Folder/File Name
+	cd "$dloadFolder1"
 
-        #Check if object is a Folder
-        if [ -d $sdir ]; then
+        #Check if Folder/File older than 5 Min (Prevent moveing in use folders)
+        if [ $(find $sdir -mmin +5 | wc -l) -gt 0 ]; then
+		sourceName=$(basename $sdir)
+                
+		#Check if object is not a Folder
+		if [ ! -d $sdir ]; then
 
-                #Check if Folder older than 5 Min (Prevent moveing in use folders)
-                if [ $(find $sdir -type f -mmin +5 | wc -l) -gt 0 ]; then
-                        sourceName=$(basename $sdir)
+			#Create new Folder and move Show into it
+			newShowDir=$(echo "$sourceName" | sed -r 's/.{4}$//')
+			mkdir $newShowDir
+			mv $sourceName $newShowDir
+			sdir="$newShowDir"
+		fi
 
-                        cd $showsFolder
+		#Set destPath English or German depending on sourceName
+		case  "$sourceName" in
+			*.GERMAN.*)
+				destPath="$showsFolder1"
+				echo "German"
+				;;
 
-                        for ddir in *;
-                        do
-                                tvShow="$ddir"
+			*.German.*)
+				destPath="$showsFolder1"
+				echo "German"
+				;;
 
-                                #Replace Spaces with "." in Destination Folders
-                                tvShowRepl=$( echo "$tvShow" | tr '[ ]' '.')
+			*)
+				destPath="$showsFolder2"
+				echo "English"
+				;;
+		esac
 
-                                #Search matching Show
-                                case "$sourceName" in
-                                        *"$tvShowRepl"*)
-                                                #Debug
-                                                echo "Match for:" $tvShow
+		#Get TV Show
+                cd $destPath
 
-                                                #Get Season Number
-                                                case "$sourceName" in
-                                                        *"S01"*)
-                                                                season="Staffel 01"
-                                                                ;;
+                for ddir in $destPath;
+                do
+                        tvShow="$ddir"
 
-                                                        *"S02"*)
-                                                                season="Staffel 02"
-                                                                ;;
+                        #Replace Spaces with "." in Destination Folders
+                        tvShowRepl=$( echo "$tvShow" | tr '[ ]' '.')
 
-                                                        *"S03"*)
-                                                                season="Staffel 03"
-                                                                ;;
+                        #Search matching Show
+                        case "$sourceName" in
+                                *"$tvShowRepl"*)
 
-                                                        *"S04"*)
-                                                                season="Staffel 04"
-                                                                ;;
+                                        #Debug
+                                        echo "Match for:" $tvShow
 
-                                                        *"S05"*)
-                                                                season="Staffel 05"
-                                                                ;;
+                                        #Get Season Number
+                                        case "$sourceName" in
+                                                *"S01"*)
+                                                        season="Staffel 01"
+                                                        ;;
 
-                                                        *"S06"*)
-                                                                season="Staffel 06"
-                                                                ;;
+                                                *"S02"*)
+                                                        season="Staffel 02"
+                                                        ;;
 
-                                                        *"S07"*)
-                                                                season="Staffel 07"
-                                                                ;;
+                                                *"S03"*)
+                                                        season="Staffel 03"
+                                                        ;;
 
-                                                        *"S08"*)
-                                                                season="Staffel 08"
-                                                                ;;
+                                                *"S04"*)
+                                                        season="Staffel 04"
+                                                        ;;
 
-                                                        *"S09"*)
-                                                                season="Staffel 09"
-                                                                ;;
+                                                *"S05"*)
+                                                        season="Staffel 05"
+                                                        ;;
 
-                                                        *"S10"*)
-                                                                season="Staffel 10"
-                                                                ;;
+                                                *"S06"*)
+                                                        season="Staffel 06"
+                                                        ;;
 
-                                                        *"S11"*)
-                                                                season="Staffel 11"
-                                                                ;;
+                                                *"S07"*)
+                                                        season="Staffel 07"
+                                                        ;;
 
-                                                        *"S12"*)
-                                                                season="Staffel 12"
-                                                                ;;
+                                                *"S08"*)
+                                                        season="Staffel 08"
+                                                        ;;
 
-                                                        *)
-                                                                echo "No matching Season found for" $sourceName
-                                                                ;;
-                                                esac
+                                                *"S09"*)
+                                                        season="Staffel 09"
+                                                        ;;
 
-                                                #Copy downloaded Episode into target folder
-                                                source="$dloadFolder"/"$sourceName"
-                                                dest="$showsFolder"/"$tvShow"/"$season"/
+                                                *"S10"*)
+                                                        season="Staffel 10"
+                                                        ;;
 
-                                                logOut=$(mv -v "$source" "$dest")
+                                                *"S11"*)
+                                                        season="Staffel 11"
+                                                        ;;
 
-                                                #Debug
-                                                #touch download-sort.log
-                                                #$logOut>>download-sort.log
+                                                *"S12"*)
+                                                        season="Staffel 12"
+                                                        ;;
 
-                                                echo "Moved:" $sourceName
-                                                ;;
+                                                *)
+                                                        echo "No matching Season found for" $sourceName
+                                                        ;;
+                                        esac
 
-                                esac
-                        done
+                                        #Copy downloaded Episode into target folder
+                                        source="$dloadFolder1"/"$sourceName"
+                                        dest="$destPath"/"$tvShow"/"$season"/
 
-                fi
+                                        logOut=$(mv -v "$source" "$dest")
+
+                                        #Debug
+                                        #touch download-sort.log
+                                        #$logOut>>download-sort.log
+
+                                        echo "Moved:" $sourceName
+                                        ;;
+
+                        esac
+                done
 
         fi
 
