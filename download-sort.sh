@@ -14,8 +14,11 @@ showsFolder1="/NAS/Shows"
 showsFolder2="/NAS/Shows-English"
 newShowDir=""
 
+#Read Folder/File Name
+cd "$dloadFolder1"
+
 #For every folder in Directory
-for sdir in $dloadFolder1;
+for sdir in *;
 do
 
 	#Read Folder/File Name
@@ -24,7 +27,7 @@ do
         #Check if Folder/File older than 5 Min (Prevent moveing in use folders)
         if [ $(find $sdir -mmin +5 | wc -l) -gt 0 ]; then
 		sourceName=$(basename $sdir)
-                
+
 		#Check if object is not a Folder
 		if [ ! -d $sdir ]; then
 
@@ -32,7 +35,7 @@ do
 			newShowDir=$(echo "$sourceName" | sed -r 's/.{4}$//')
 			mkdir $newShowDir
 			mv $sourceName $newShowDir
-			sdir="$newShowDir"
+			#sdir="$newShowDir"
 		fi
 
 		#Set destPath English or German depending on sourceName
@@ -53,10 +56,11 @@ do
 				;;
 		esac
 
+
 		#Get TV Show
                 cd $destPath
 
-                for ddir in $destPath;
+                for ddir in *;
                 do
                         tvShow="$ddir"
 
@@ -68,7 +72,7 @@ do
                                 *"$tvShowRepl"*)
 
                                         #Debug
-                                        echo "Match for:" $tvShow
+                                        echo "Match for:" "\033[32m"$tvShow"\033[0m"
 
                                         #Get Season Number
                                         case "$sourceName" in
@@ -135,7 +139,7 @@ do
                                         #touch download-sort.log
                                         #$logOut>>download-sort.log
 
-                                        echo "Moved:" $sourceName
+                                        echo "Moved:""\033[1;34m" $sourceName "\033[0m""to""\033[31m" $dest"\033[0m"
                                         ;;
 
                         esac
