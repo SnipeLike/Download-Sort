@@ -6,7 +6,7 @@ Usage
 Source Folder is  "dloadFolder="/Downloads/jDownloader""
 Dest Folder is:   "showsFolder="/NAS/Shows""
 
-In the Folder "Shows" sould be all TV Shows named as like the Downloaded File.
+In the Folder "Shows" should be all TV Shows named as like the Downloaded File.
 
 Example:	
 Downloading
