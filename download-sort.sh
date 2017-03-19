@@ -2,14 +2,14 @@
 
 #---------------#
 # Download-Sort #
-# v0.7          #
+# v0.8          #
 #---------------#
 
 #Env-Var
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 #Var
-dloadFolder1="/Downloads/extracted"
+dloadFolder1="/jDownloader/Downloads/extracted"
 showsFolder1="/NAS/Shows"
 showsFolder2="/NAS/Shows-English"
 newShowDir=""
@@ -72,7 +72,7 @@ do
                                 *"$tvShowRepl"*)
 
                                         #Debug
-                                        echo "Match for:" "\033[32m"$tvShow"\033[0m"
+                                        echo "Match for:" "\033[1;33m"$tvShow"\033[0m"
 
                                         #Get Season Number
                                         case "$sourceName" in
@@ -133,13 +133,13 @@ do
                                         source="$dloadFolder1"/"$sourceName"
                                         dest="$destPath"/"$tvShow"/"$season"/
 
-                                        logOut=$(mv -v "$source" "$dest")
+                                        mv "$source" "$dest"
+					if [ $? -eq 0 ]; then
+                                        	echo "Moved:""\033[1;32m" $sourceName "\033[0m""to""\033[34m" $dest"\033[0m"
+					else
+						echo "Failed to move" "\033[31m"$sourceName"\033[0m"
+					fi
 
-                                        #Debug
-                                        #touch download-sort.log
-                                        #$logOut>>download-sort.log
-
-                                        echo "Moved:""\033[1;34m" $sourceName "\033[0m""to""\033[31m" $dest"\033[0m"
                                         ;;
 
                         esac
